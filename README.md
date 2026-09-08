@@ -1,37 +1,32 @@
-# BUSFIN 4215 Venture MVP Starter
+# Fairshare — BUSFIN 4215 Venture MVP
 
-This is a deployable starting point for the team **Venture MVP / Landing Page** project. It
-shows the structure of a causal claim, a meaningful call to action, a precommitted decision
-rule, explicit denominators, and transparent evidence. It deliberately transmits no data.
+Turn a group assignment into an editable work plan with suggested owners, dates, and a text export.
 
-Submitting the unchanged starter is not acceptable. Replace its customer, problem, value
-mechanism, interaction, hypothesis, evidence, economics, writing, and visual identity.
+## Run locally
 
-## Start and test
+`npm run serve`, then open http://localhost:8000. Run `npm test` for automated checks.
+No install step, external runtime service, accounts, analytics, or persistent browser storage is required. Reload clears the working plan. Use aliases; downloaded files contain what the user entered.
 
-```bash
-npm run serve
-npm test
-```
+## Mechanism and limitations
 
-Open <http://localhost:8000>. Complete `EXPERIMENT.md` before changing the interface.
+Tasks are assigned largest-estimated-effort first to the lowest-load teammate. Dates follow the original task order between today and the day before the deadline; same-day work stays today. Owners and dates are editable. It does not reason about skills, availability, dependencies, or feasibility. Teammates must agree to the plan themselves.
 
-## Deploy
+## Submission status
 
-Push to `main`. In **Settings → Pages**, select **GitHub Actions** if needed. The included
-workflow tests the experiment logic and deploys the static site. Verify the public URL in a
-private browser window and on a second device.
+Distinctive redesigned local prototype built. Public URL pending owner approval. Participant evidence and evidence-led revision pending. Student name pending.
 
-## Evidence package
+- EXPERIMENT.md: precommitted hypothesis and rule
+- TEST_SCRIPT.md: ethical five-minute test protocol
+- EVIDENCE.md: pending anonymous actual results
+- ECONOMICS.md: explicit economic assumptions and sensitivity
+- BUILD_LOG.md: AI assistance and student ownership
+- REVISION_RECEIPT.md: distinguish build changes from future evidence-led revision
+- PITCH_REVISION.md: pending actual practice advice and revised claim
 
-- public URL and repository/source;
-- `EXPERIMENT.md` with a named hypothesis and precommitted rule;
-- `EVIDENCE.md` with ethical behavioral evidence and denominators;
-- `ECONOMICS.md`;
-- `BUILD_LOG.md`; and
-- `REVISION_RECEIPT.md`.
+## Publication
 
-The starter's local click count is only a transparent demonstration. It is not credible
-customer evidence. If the venture truly needs persistent data, consult the instructor
-before adding a backend, collect the minimum data possible, and explain retention and
-consent.
+Do not push or publish until the owner approves. GitHub Actions runs npm test, builds runtime files with npm run build, and can deploy dist/ to Pages after approval and repository configuration. Study records are excluded from the deployed website. Verify the actual public URL before recording it or submitting. A localhost URL cannot be submitted as the required public live site.
+
+## Validation
+
+Automated checks cover balanced allocation, input rejection, task order, review-day scheduling, same-day deadlines, and edited exports, plus inherited starter experiment tests. Browser checks are developer validation, never user-test evidence.

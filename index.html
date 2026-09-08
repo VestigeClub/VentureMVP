@@ -1,83 +1,21 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="BUSFIN 4215 venture MVP starter">
-    <title>ClearShift — Venture MVP Starter</title>
-    <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="styles.css">
-  </head>
-  <body>
-    <header class="hero">
-      <nav aria-label="Primary navigation">
-        <a class="brand" href="#top">ClearShift <span>starter</span></a>
-        <a href="#test">See the test</a>
-      </nav>
-      <div class="hero-grid" id="top">
-        <div>
-          <p class="eyebrow">Replace this with one specific customer moment</p>
-          <h1>Know which shift needs attention before the schedule breaks.</h1>
-          <p class="lede">
-            A deliberately incomplete concierge MVP for managers coordinating hourly
-            teams. Your venture must replace the customer, mechanism, proof, and offer.
-          </p>
-          <button class="button" type="button" data-event="pilot_intent">Request a pilot</button>
-          <p class="microcopy">Demo only: this starter never transmits or stores personal information.</p>
-        </div>
-        <div class="product-card" aria-label="Example product preview">
-          <p class="eyebrow">Today</p>
-          <h2>Coverage risk</h2>
-          <div class="risk-row"><span>Opening shift</span><strong>Ready</strong></div>
-          <div class="risk-row warning"><span>Lunch shift</span><strong>1 gap</strong></div>
-          <div class="risk-row"><span>Closing shift</span><strong>Ready</strong></div>
-          <button class="button button-secondary" type="button" data-event="demo_intent">Try the workflow</button>
-        </div>
-      </div>
-    </header>
-
-    <main>
-      <section aria-labelledby="mechanism-heading">
-        <p class="eyebrow">Mechanism, not adjectives</p>
-        <h2 id="mechanism-heading">A first-time visitor should reconstruct the causal claim.</h2>
-        <div class="steps">
-          <article><span>1</span><h3>Observe</h3><p>Name the current workaround and the behavior that reveals pain.</p></article>
-          <article><span>2</span><h3>Act</h3><p>Offer one meaningful action that tests value, not a decorative button.</p></article>
-          <article><span>3</span><h3>Decide</h3><p>Compare the observed rate with a threshold written before the test.</p></article>
-        </div>
-      </section>
-
-      <section id="test" class="experiment" aria-labelledby="test-heading">
-        <div>
-          <p class="eyebrow">Starter hypothesis</p>
-          <h2 id="test-heading">Will 5 of 10 target managers request a pilot?</h2>
-          <p>
-            Replace this claim in <code>EXPERIMENT.md</code>. During the classroom blind
-            test, record denominators and behavior manually. This page stores only a local,
-            same-device demonstration count and sends nothing to a server.
-          </p>
-        </div>
-        <div class="counter" aria-live="polite">
-          <strong id="intent-count">0</strong>
-          <span>local test actions</span>
-          <button id="reset" class="text-button" type="button">Reset local demo count</button>
-        </div>
-      </section>
-
-      <dialog id="response-dialog">
-        <h2>Intent recorded on this device</h2>
-        <p>
-          This is a safe placeholder, not customer evidence. Replace it with an ethical
-          test appropriate to your hypothesis, and disclose what will happen before a user acts.
-        </p>
-        <button class="button" type="button" data-close>Close</button>
-      </dialog>
-    </main>
-
-    <footer>
-      <p><strong>BUSFIN 4215 starter.</strong> Do not submit unchanged. Do not collect sensitive data.</p>
-    </footer>
-
-    <script type="module" src="app.js"></script>
-  </body>
-</html>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Fairshare gives every group project task an owner and a deadline. Build, adjust, and share an effort-balanced plan."><meta name="theme-color" content="#2546ee"><title>Fairshare — Give every task an owner</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='8' fill='%232546ee'/%3E%3Cpath d='M11 30V10H30M11 20H25' stroke='white' stroke-width='5' fill='none'/%3E%3C/svg%3E"><link rel="preload" href="assets/fonts/SpaceGrotesk.ttf" as="font" type="font/ttf" crossorigin><link rel="stylesheet" href="styles.css"></head>
+<body><a class="skip-link" href="#workspace">Skip to planner</a>
+<header class="masthead"><a class="brand" href="./" aria-label="Fairshare home"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 27V5h23M6 16h18"/></svg>fairshare</a><nav aria-label="Main navigation"><a href="#workspace">Planner</a><a href="#about">The idea</a><span class="prototype">Student prototype</span></nav></header>
+<main>
+<section class="opening"><h1>Give every task<br><span>an owner.</span></h1><div class="opening-copy"><p>A group project shouldn’t leave one person doing all the follow-up. Make a work plan, balance the estimated effort, and bring it to your team.</p><button id="sample" class="sample-button" type="button">Explore a sample project <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button><div id="sample-confirm" class="sample-confirm" hidden><p>Replace your current work with the sample? Download your plan first if you want to keep it.</p><button id="replace-sample" class="secondary" type="button">Replace with sample</button> <button id="keep-work" class="secondary" type="button">Keep my work</button></div><span class="opening-note">No account. No setup. Start with your assignment.</span></div></section>
+<div class="workspace-top" id="workspace"><h2>Your project workspace</h2><span>Plan together. Agree before you assign.</span></div>
+<div class="workspace">
+<section class="setup" aria-labelledby="setup-heading"><div class="section-head"><h3 id="setup-heading">Set up the work</h3><span class="step-number" aria-label="Step 1 of 2">1 / 2</span></div>
+<form id="planner-form"><label for="project">Project name</label><input id="project" maxlength="100" required placeholder="e.g. Campus coffee shop case study" autocomplete="off">
+<div class="pair"><div><label for="deadline">Final deadline</label><input id="deadline" type="date" required></div><div><label for="members">Teammates <span>(1–8)</span></label><input id="members" maxlength="200" required placeholder="Alex, Sam, Jo" autocomplete="off"></div></div><p class="hint">Use aliases, separated by commas. Include yourself.</p>
+<div class="task-input-heading"><label id="tasks-label">What needs to get done?</label><span>Estimated hours</span></div><p class="hint">Put tasks in the order they need to happen.</p><div id="task-inputs" role="group" aria-labelledby="tasks-label"></div><button id="add-task" class="add-button" type="button"><span aria-hidden="true">+</span> Add a task</button>
+<p class="error" id="error" role="alert"></p><button class="primary build-button" type="submit">Build my plan <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button><p class="privacy">Your entries stay in this tab. Download before leaving: refreshing clears your work.</p></form></section>
+<section class="result" aria-label="Project plan"><div class="section-head"><h3>Make it your team’s plan</h3><span class="step-number" aria-label="Step 2 of 2">2 / 2</span></div>
+<div id="empty"><div class="empty-illustration" aria-hidden="true"><div><span>Research</span><i></i></div><div><span>Build</span><i></i></div><div><span>Review</span><i></i></div><p>Who’s taking what?</p></div><h2>The plan starts here.</h2><p>Add your project, then build a draft with an owner and a date for every task.</p><p class="hint">Suggested owners balance estimated hours.<br>You decide what actually works for your team.</p></div>
+<div id="plan" hidden><div class="plan-heading"><h2 id="plan-title" tabindex="-1"></h2><span id="sample-label" class="badge" hidden>Sample project</span></div><p id="plan-summary"></p><div class="workload-heading"><h4>Estimated workload</h4><span id="balance-caption"></span></div><div id="load-summary" class="loads" aria-label="Estimated workload per teammate"></div><p class="notice" id="schedule-note"></p><div id="task-list"></div><div class="export-row"><button id="download" class="primary" type="button">Download plan</button><button id="copy" class="secondary" type="button">Copy for group chat</button></div><p id="status" role="status" class="status"></p><p class="hint result-disclaimer">Review skills, availability, and dependencies with your team. Rebuilding replaces your plan edits and completion marks.</p></div></section>
+</div>
+<section id="about" class="about"><div><h2>Built for the moment<br>after “let’s make a group chat.”</h2><p>Fairshare is for the student coordinating a group assignment due within a week. It turns a list of work into a draft everyone can review before getting started.</p></div><div class="about-details"><details><summary>How does the planning work?</summary><p>The largest task goes to the teammate with the lowest assigned effort, then the process repeats. Dates follow your task order, with a final day for review when time allows. Equal estimated hours do not guarantee equal difficulty. You can edit every owner and date.</p></details><details><summary>Who would pay for this?</summary><p>The planner is free. Our proposed next offer is a human review of the plan for $5 per team per assignment, paid by one team member. That service is not available yet. The price and willingness to pay are untested.</p></details><details><summary>What happens to my information?</summary><p>No accounts, analytics, or server storage. Your entries remain in this tab until you copy or download them. Use initials or aliases and avoid sensitive information. Closing or refreshing the page clears your work.</p></details><details><summary>What are we testing?</summary><p>Our first test asks whether 2 of 3 students with an assignment due within a week can independently build and review a plan, then voluntarily put it into their actual team chat or shared document within five minutes. This is a small exploratory test. No outcome is claimed before actual participant testing.</p></details></div></section>
+</main><footer><a class="brand" href="./">fairshare</a><span>Built for shared assignments.<br>BUSFIN 4215 student MVP.</span><a href="#workspace">Back to the planner</a></footer>
+<script type="module" src="app.js"></script></body></html>
