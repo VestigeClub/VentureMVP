@@ -1,6 +1,7 @@
 # Revision receipt
 
 ## Completed build revisions — not user-test evidence
+
 - Replaced professor's ClearShift click-count starter with a working group project planner.
 - Owner requested a distinct redesign. Replaced green/cream styling with cobalt/white/ink, self-hosted type, explicit task/effort rows, and workload bars.
 - Developer review identified sample-label provenance and unsaved-input overwrite edge cases. Both were corrected and browser checked.
@@ -9,7 +10,9 @@
 These revisions do not substitute for the rubric's observed-user revision or Pitch 1's practice-feedback revision.
 
 ## Consequential user revision — PENDING
+
 No user sessions have happened. Do not invent an observed surprise.
+
 - First attempt and denominator:
 - Strongest observed signal:
 - Adoption-blocking friction:
@@ -22,4 +25,5 @@ No user sessions have happened. Do not invent an observed surprise.
 Separate within-person retests from independent participants. If verification cannot happen, state that explicitly.
 
 ## Pitch revision
-See PITCH_REVISION.md. The required ungraded practice has not happened yet.
+
+See pitch-revision.md. The required ungraded practice has not happened yet.

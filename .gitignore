@@ -1,6 +1,5 @@
-.DS_Store
-node_modules/
-coverage/
-
 dist/
-.impeccable/review/
+node_modules/
+.impeccable/
+.DS_Store
+*.log
