@@ -16,7 +16,7 @@ Fairshare supports two separate BUSFIN 4215 submissions: Venture MVP (10%) and P
 
 ## Current evidence
 
-No participant sessions or pitch practice have been reported. The evidence and revision records therefore remain incomplete. A working deployment does not establish demand, user adoption, or a completed practice/re-pitch sequence.
+One informal test by a friend has been reported; the formal study and pitch practice remain pending. The evidence and revision records therefore remain incomplete. A working deployment does not establish demand, user adoption, or a completed practice/re-pitch sequence.
 
 ## Submission requirements
 

@@ -1,6 +1,8 @@
-# User-test evidence — no sessions yet
+# User-test evidence
 
-As of 2026-09-08, the owner reports no user testing. This is a truthful pending record, not completed evidence.
+As of 2026-09-08, the owner reports that one friend tested Fairshare for a group project (1 reported tester). No identifying information is included. This informal test has not been assessed against the precommitted H1 criteria; no success rate or pass/fail conclusion is claimed.
+
+The table below records the formal H1 study, which remains pending.
 
 | Measure                                              | Actual result                                 |
 | ---------------------------------------------------- | --------------------------------------------- |
@@ -30,4 +32,4 @@ Do not invent entries. Keep failed starts. Do not record names, messages, recipi
 
 ## Interpretation
 
-No observed customer behavior is available. The build demonstrates software capability only. Adoption, savings, payment, and repeat usage are unproven.
+The informal test is preliminary feedback, not a completed H1 study. Adoption, savings, payment, and repeat usage remain unproven.
