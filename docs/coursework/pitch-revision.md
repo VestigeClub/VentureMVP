@@ -1,5 +1,11 @@
 # Pitch revision
 
-Status: the required practice attempt has not been reported. No peer feedback or practice-induced claim revision is recorded.
+## Preparation revision
 
-After the ungraded pod attempt, record the original claim, the advice received, the revised claim, and the specific slide or demonstration change. The graded submission must contain the slides actually used in the re-pitch and a short note explaining that revision.
+AI review identified that “$5 human plan review” did not explain what the coordinator would receive beyond the free planner. Slide 3 and the spoken script now explain that the proposed review checks the assignment brief, flags missing tasks, and considers teammate availability. The offer remains proposed and willingness to pay remains untested.
+
+This revision followed AI feedback during preparation. It does not represent classroom practice, peer advice, or a graded re-pitch.
+
+## Required classroom revision
+
+The required practice attempt has not been reported. After that attempt, record the actual advice, original claim, revised claim, and change to the slides or demonstration. Submit the slides actually used for the graded re-pitch.

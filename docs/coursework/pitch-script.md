@@ -1,6 +1,6 @@
 # Fairshare: 90-second pitch rehearsal
 
-Use Fairshare-Pitch-1.pptx. This is ready for practice. After the real practice attempt, revise the actual claim based on advice, then submit the slides you actually use for the graded re-pitch. The public product URL is https://VestigeClub.github.io/VentureMVP/. Confirm the site is available on the presentation machine before starting.
+Use the latest pitch.pptx in this folder (Fairshare-Pitch-1-Final.pptx in the submission outputs). This is ready for practice. After the real practice attempt, revise the actual claim based on advice, then submit the slides you actually use for the graded re-pitch. The public product URL is https://VestigeClub.github.io/VentureMVP/. Confirm the site is available on the presentation machine before starting.
 
 ## Before you start
 
@@ -8,11 +8,11 @@ Open the deck and the planner in separate windows. Load the sample inputs before
 
 ## 0–25 seconds: slide 1
 
-“Imagine your group project is due tomorrow. The group chat is active, but nobody owns the slides. The student coordinating the team has to chase people or finish the missing work. Fairshare is for that coordinator: a draft plan with a named owner and date for every task.”
+“The deadline is tomorrow. Your group chat is busy, but nobody owns the slides. The student coordinating the project ends up chasing teammates or doing the missing work. Fairshare gives that coordinator a starting plan with an owner and date for every task.”
 
 ## 25–60 seconds: slide 2, then live product
 
-“Here is the working planner. Estimated hours guide the assignments. I can change an owner, see the workload change, then copy the plan into the team’s existing chat. The team still decides whether the assignments and dates make sense.”
+“Enter tasks, estimated hours, teammates, and a deadline. Fairshare distributes work using estimated hours. Here, I generate the plan, change an owner, watch workload totals update, and copy it into the team’s existing chat. The team must check availability and whether the dates make sense.”
 
 Spend about 15 seconds showing the actual product:
 
@@ -23,7 +23,7 @@ Spend about 15 seconds showing the actual product:
 
 ## 60–90 seconds: slide 3
 
-“The planner is free. The proposed payer is the coordinator buying a five-dollar human review for the team, before dividing the work. That price is untested. My first test is whether two of three students voluntarily put a plan into their real team workflow. If they do not, I will revise the workflow before building the paid service.”
+“The planner is free. I propose a five-dollar human review, paid by the coordinator, to check the task list against the assignment brief, flag missing work, and suggest assignments based on availability. That service is not available yet, and payment demand is untested. First, I am testing whether students voluntarily use the plan in their real group workflow.”
 
 ## Practice feedback to collect
 
