@@ -10,6 +10,7 @@ Fairshare supports two separate BUSFIN 4215 submissions: Venture MVP (10%) and P
 | [Evidence](evidence.md)             | Actual participant results and limits                                              |
 | [Build log](build-log.md)           | Implementation history, AI assistance, verification, and ownership                 |
 | [Revision record](revision.md)      | Changes prompted by evidence and their verification                                |
+| [Pitch slides](pitch.pptx)          | Three-slide PowerPoint with public product URL                                     |
 | [Pitch script](pitch-script.md)     | Timed narrative and live demonstration                                             |
 | [Pitch revision](pitch-revision.md) | Actual advice and claim revision after practice                                    |
 

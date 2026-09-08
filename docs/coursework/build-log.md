@@ -22,3 +22,7 @@ Codex generated the implementation, automated tests, draft study documents, and 
 Developer checks are software validation, not user-test evidence. No participant sessions, sales, or practice pitch have been reported. Design changes and code corrections are not claimed as customer-driven revisions.
 
 Earlier browser automation could not confirm a downloaded file and produced malformed full-page captures. Clipboard text was verified by pasting it into a disposable input, and native viewport captures were used for layout inspection. Those limitations were not counted as successful checks.
+
+## Public deployment
+
+The repository is public and GitHub Pages serves the application over HTTPS. See [release checks](../release-checks.md) for the tested revision and browser results. Participant evidence and pitch practice are still pending.

@@ -43,6 +43,8 @@ GitHub Actions tests pull requests and changes to `main`. A successful push to `
 
 The app has no accounts, analytics, third-party scripts, or server-side storage. Entered content remains in the browser tab until the user copies or downloads it. Use aliases and avoid sensitive information. See [security notes](docs/security.md) for controls and limitations.
 
+[Release checks](docs/release-checks.md) record the deployed workflow and known verification limits.
+
 ## Coursework
 
 Built for BUSFIN 4215. [Coursework records](docs/coursework/README.md) describe the experiment, economics, AI assistance, and current evidence. They distinguish implemented features from untested business assumptions and unfinished participant work.
