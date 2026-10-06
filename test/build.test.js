@@ -25,7 +25,7 @@ test("release build removes stale files and ships only runtime assets", async ()
   assert.match(html, /Content-Security-Policy/);
   assert.match(
     html,
-    /connect-src https:\/\/\*\.firebaseio\.com https:\/\/\*\.firebasedatabase\.app;/,
+    /connect-src https:\/\/\*\.firebaseio\.com https:\/\/\*\.firebasedatabase\.app https:\/\/\*\.workers\.dev;/,
   );
   assert.doesNotMatch(html, /(?:src|href)="https?:\/\//);
 });

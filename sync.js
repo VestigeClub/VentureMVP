@@ -46,3 +46,71 @@ export function watchPlan(id, onPlan, onStatus) {
   source.addEventListener("cancel", () => onStatus("off"));
   return () => source.close();
 }
+
+// Team log: append-only entries under logs/<plan id>. Teammates can post notes;
+// questions to the assistant and its answers are written by the relay only.
+// Leave AI_URL empty to show the log without the assistant.
+export const AI_URL = "";
+const aiBase = () => globalThis.FAIRSHARE_AI ?? AI_URL;
+export const aiEnabled = () =>
+  liveEnabled() && /^(https:\/\/|http:\/\/localhost[:/])/.test(aiBase());
+const logEndpoint = (id) => `${base()}/logs/${id}.json`;
+export async function postNote(id, name, text) {
+  const response = await fetch(logEndpoint(id), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      n: name,
+      k: "note",
+      x: text,
+      t: { ".sv": "timestamp" },
+    }),
+  });
+  if (!response.ok) throw new Error(`Post failed (${response.status})`);
+}
+export async function askAssistant(id, name, question) {
+  const response = await fetch(aiBase(), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id, name, question }),
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok)
+    throw new Error(data.error || "The assistant is unavailable right now.");
+}
+const validEntry = (e) =>
+  e &&
+  typeof e.n === "string" &&
+  typeof e.x === "string" &&
+  typeof e.t === "number" &&
+  ["q", "a", "note"].includes(e.k);
+// Calls onEntries with every entry so far, oldest first, whenever one arrives.
+export function watchLog(id, onEntries) {
+  const entries = new Map();
+  const source = new EventSource(logEndpoint(id));
+  const emit = () =>
+    onEntries(
+      [...entries.values()].sort(
+        (a, b) => a.t - b.t || (a.key < b.key ? -1 : 1),
+      ),
+    );
+  const handle = (event) => {
+    try {
+      const { path, data } = JSON.parse(event.data);
+      if (path === "/") {
+        if (event.type === "put") entries.clear();
+        for (const [key, e] of Object.entries(data ?? {}))
+          if (validEntry(e)) entries.set(key, { key, ...e });
+      } else {
+        const key = path.slice(1).split("/")[0];
+        if (validEntry(data)) entries.set(key, { key, ...data });
+      }
+      emit();
+    } catch {
+      /* ignore malformed events */
+    }
+  };
+  source.addEventListener("put", handle);
+  source.addEventListener("patch", handle);
+  return () => source.close();
+}

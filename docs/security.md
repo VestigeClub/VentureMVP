@@ -25,3 +25,7 @@ GitHub Pages controls hosting and HTTP headers. A meta Content Security Policy c
 ## Reporting an issue
 
 For a suspected vulnerability, contact the repository maintainer privately before publishing details. Do not include credentials, personal data, or participant records in public issues.
+
+## Team log and assistant
+
+Each live plan has a log at `logs/<id>`. Database rules allow a client to create a new entry of type `note` only, never to change or delete one, and require the database's own server timestamp, so times can't be backdated. Questions to the assistant go to a Cloudflare Worker (`relay/worker.js`) that holds the Anthropic API key and a database secret. The Worker only accepts requests from the site's origin, checks the plan exists, enforces a daily question limit, and writes both the question and Claude's answer to the log itself, so assistant answers can't be forged from a browser. Names in the log are chosen by teammates and are not verified identities. The plan, the recent log, and the question are sent to Anthropic's API to produce an answer. Answers are rendered as plain text.

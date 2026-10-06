@@ -9,7 +9,7 @@
     />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src https://*.firebaseio.com https://*.firebasedatabase.app; object-src 'none'; base-uri 'none'; form-action 'none'"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src https://*.firebaseio.com https://*.firebasedatabase.app https://*.workers.dev; object-src 'none'; base-uri 'none'; form-action 'none'"
     />
     <meta name="referrer" content="no-referrer" />
     <meta name="theme-color" content="#2546ee" />
@@ -309,6 +309,43 @@
                 Copy check-in message
               </button>
             </div>
+            <section
+              id="team-log"
+              class="team-log"
+              hidden
+              aria-labelledby="team-log-heading"
+            >
+              <div class="team-log-head">
+                <div>
+                  <h4 id="team-log-heading">Team log</h4>
+                  <p id="team-log-hint" class="hint">
+                    Everyone on the link sees this. Entries are time-stamped and
+                    can’t be edited or deleted.
+                  </p>
+                </div>
+                <button id="log-export" class="text-button" type="button">
+                  Download log
+                </button>
+              </div>
+              <ol id="log-list" class="log-list" aria-live="polite"></ol>
+              <form id="log-form" class="log-form">
+                <label class="visually-hidden" for="log-input">Message</label>
+                <textarea
+                  id="log-input"
+                  rows="2"
+                  maxlength="1000"
+                  placeholder="Ask the assistant or leave a note for the team"
+                ></textarea>
+                <div class="log-actions">
+                  <button id="log-ask" class="primary small" type="submit">
+                    Ask assistant
+                  </button>
+                  <button id="log-note" class="secondary small" type="button">
+                    Post note
+                  </button>
+                </div>
+              </form>
+            </section>
             <div class="export-row">
               <button id="copy-link" class="primary" type="button">
                 Copy team link</button
@@ -392,7 +429,9 @@
               Firebase database under a long random address so your team can
               edit it together live. There is no list of plans to browse, but
               anyone with the link can read and change that plan, so use
-              initials or aliases and avoid sensitive information.
+              initials or aliases and avoid sensitive information. Questions to
+              the team assistant are sent, with the plan, to Anthropic’s Claude
+              API to get an answer, and both are kept in the team log.
             </p>
           </details>
           <details>

@@ -4,6 +4,7 @@ Fairshare turns a group assignment into an editable plan with task owners, estim
 
 - **Balance or claim:** let Fairshare balance estimated hours, or leave tasks open so teammates claim their own and balance the leftovers in one click.
 - **Live team links:** copying the team link creates one shared plan that every teammate on the link can edit at the same time (claims, dates, done marks), synced through Firebase Realtime Database. No accounts. If live sync is unavailable, the link falls back to a snapshot that carries the plan after the `#`.
+- **Team assistant and log:** every live plan has a shared log. Teammates post notes and ask an AI assistant (Claude) about the plan, such as who is behind or how to split a task. Entries are time-stamped by the database and can't be edited or deleted, and the log downloads as a CSV for instructors. Setup: [relay/README.md](relay/README.md).
 - **Missing-task checker and templates:** paste the assignment brief to catch tasks your list skips, or start from a presentation, paper, case study, or lab report.
 - **Calendar view:** switch the plan to a week-by-week calendar, drag tasks between days, and tap a task to change its owner, date, or mark it done. Shared links open in this view.
 - **Plan image:** download a shareable picture of the plan with workload bars, a calendar of every due date and check-in, and the full task list.

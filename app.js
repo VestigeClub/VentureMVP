@@ -25,6 +25,10 @@ import {
   pushPlan,
   fetchPlan,
   watchPlan,
+  aiEnabled,
+  postNote,
+  askAssistant,
+  watchLog,
 } from "./sync.js";
 import { posterBlob, mondayOf, pretty, OWNER_COLORS } from "./poster.js";
 const $ = (id) => document.getElementById(id);
@@ -38,6 +42,8 @@ let liveId = null;
 let lastSynced = null;
 let stopWatch = null;
 let pushTimer = null;
+let stopLog = null;
+let logEntries = [];
 let editing = -1;
 let rowId = 0;
 $("deadline").min = localDate();
@@ -728,6 +734,10 @@ function setLiveBadge(state) {
 function stopLive() {
   stopWatch?.();
   stopWatch = null;
+  stopLog?.();
+  stopLog = null;
+  logEntries = [];
+  $("team-log").hidden = true;
   clearTimeout(pushTimer);
   liveId = null;
   lastSynced = null;
@@ -773,7 +783,110 @@ function startWatch() {
   stopWatch?.();
   setLiveBadge("reconnecting");
   stopWatch = watchPlan(liveId, applyRemote, setLiveBadge);
+  startLog();
 }
+// ---------- team log ----------
+const KIND = { q: "asked the assistant", a: "", note: "posted a note" };
+function logTime(t) {
+  return new Date(t).toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+function renderLog(entries) {
+  logEntries = entries;
+  const list = $("log-list");
+  const atBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 40;
+  list.replaceChildren(
+    ...entries.map((e) => {
+      const item = document.createElement("li");
+      item.className = `log-entry ${e.k === "a" ? "ai" : e.k}`;
+      const meta = document.createElement("span");
+      meta.className = "log-meta";
+      const who = document.createElement("strong");
+      who.textContent = e.k === "a" ? "Assistant" : e.n;
+      meta.append(who, ` ${KIND[e.k]} · ${logTime(e.t)}`.replace("  ·", " ·"));
+      const text = document.createElement("p");
+      text.className = "log-text";
+      text.textContent = e.x;
+      item.append(meta, text);
+      return item;
+    }),
+  );
+  if (atBottom || entries.at(-1)?.n === viewer)
+    list.scrollTop = list.scrollHeight;
+}
+function startLog() {
+  stopLog?.();
+  $("team-log").hidden = false;
+  const ai = aiEnabled();
+  $("log-ask").hidden = !ai;
+  $("log-note").className = ai ? "secondary small" : "primary small";
+  $("log-input").placeholder = ai
+    ? "Ask the assistant about the plan, or leave a note for the team"
+    : "Leave a note for the team";
+  $("team-log-heading").textContent = ai
+    ? "Team assistant and log"
+    : "Team log";
+  renderLog([]);
+  stopLog = watchLog(liveId, renderLog);
+}
+function logAuthor() {
+  if (viewer) return viewer;
+  $("status").textContent =
+    "Pick your name under “Viewing as” first, so the log shows who wrote it.";
+  $("viewer").focus();
+  return null;
+}
+async function sendLog(kind) {
+  const text = $("log-input").value.trim();
+  if (!text || !liveId) return;
+  const name = logAuthor();
+  if (!name) return;
+  const buttons = [$("log-ask"), $("log-note")];
+  buttons.forEach((b) => (b.disabled = true));
+  if (kind === "ask") $("log-ask").textContent = "Thinking…";
+  try {
+    if (kind === "ask") await askAssistant(liveId, name, text);
+    else await postNote(liveId, name, text);
+    $("log-input").value = "";
+    $("status").textContent = "";
+  } catch (error) {
+    $("status").textContent =
+      error.message || "Couldn’t post that. Check your connection.";
+  } finally {
+    buttons.forEach((b) => (b.disabled = false));
+    $("log-ask").textContent = "Ask assistant";
+  }
+}
+$("log-form").addEventListener("submit", (event) => {
+  event.preventDefault();
+  sendLog(aiEnabled() ? "ask" : "note");
+});
+$("log-note").addEventListener("click", () => sendLog("note"));
+$("log-input").addEventListener("keydown", (event) => {
+  if (event.key === "Enter" && (event.metaKey || event.ctrlKey))
+    $("log-form").requestSubmit();
+});
+$("log-export").addEventListener("click", () => {
+  const cell = (v) => `"${String(v).replace(/"/g, '""')}"`;
+  const rows = [
+    ["Time (UTC)", "Name", "Type", "Text"],
+    ...logEntries.map((e) => [
+      new Date(e.t).toISOString(),
+      e.k === "a" ? "Assistant" : e.n,
+      { q: "Question to assistant", a: "Assistant answer", note: "Note" }[e.k],
+      e.x,
+    ]),
+  ];
+  download(
+    rows.map((r) => r.map(cell).join(",")).join("\r\n"),
+    `${current.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-team-log.csv`,
+    "text/csv",
+  );
+});
 async function goLive() {
   if (liveId) return;
   const id = newLiveId();
