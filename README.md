@@ -5,6 +5,7 @@ Fairshare turns a group assignment into an editable plan with task owners, estim
 - **Balance or claim:** let Fairshare balance estimated hours, or leave tasks open so teammates claim their own and balance the leftovers in one click.
 - **Team links:** the whole plan travels in the link (after the `#`), so teammates open it, claim tasks, mark progress, and send it back. No accounts or server.
 - **Missing-task checker and templates:** paste the assignment brief to catch tasks your list skips, or start from a presentation, paper, case study, or lab report.
+- **Plan image:** download a shareable picture of the plan with workload bars, a calendar of every due date and check-in, and the full task list.
 - **Check-ins:** suggested check-in dates, a ready-to-paste status message, and a calendar file with due-date reminders for the team or one person.
 - **Saved plans:** plans are kept in this browser so you can pick up where you left off.
 - **Instructor templates:** share one task list and deadline with a whole section; every team adds its own names.
