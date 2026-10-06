@@ -17,6 +17,7 @@ import {
   icsFor,
   TEMPLATES,
 } from "./planner.js";
+import { posterBlob } from "./poster.js";
 const $ = (id) => document.getElementById(id);
 const STORE = "fairshare.plans.v1";
 let current = null;
@@ -533,11 +534,13 @@ async function copy(text, success) {
     $("status").textContent = success;
   } catch {
     $("status").textContent =
-      "Clipboard access is unavailable here. Use Download plan instead.";
+      "Clipboard access is unavailable here. Use Download image instead.";
   }
 }
-function download(text, name, type) {
-  const url = URL.createObjectURL(new Blob([text], { type }));
+function download(content, name, type) {
+  const url = URL.createObjectURL(
+    content instanceof Blob ? content : new Blob([content], { type }),
+  );
   const link = document.createElement("a");
   link.href = url;
   link.download = name;
@@ -553,14 +556,25 @@ const fileName = (suffix) =>
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-|-$/g, "") || "fairshare-plan"
   }${suffix}`;
-$("download").addEventListener("click", () => {
-  download(
-    label() + planText(current),
-    fileName(".txt"),
-    "text/plain;charset=utf-8",
-  );
-  $("status").textContent =
-    "Download requested. Check your downloads and share the file with your team.";
+$("download").addEventListener("click", async () => {
+  $("download").disabled = true;
+  $("status").textContent = "Drawing your plan…";
+  try {
+    const blob = await posterBlob(current, {
+      sample: planIsExample,
+      url: `${location.host}${location.pathname}`.replace(/\/$/, ""),
+      today: localDate(),
+    });
+    if (!blob) throw new Error();
+    download(blob, fileName(".png"), "image/png");
+    $("status").textContent =
+      "Plan image downloaded: workload, calendar, and every task. Drop it in your group chat.";
+  } catch {
+    $("status").textContent =
+      "This browser couldn’t draw the image. Use Copy for group chat instead.";
+  } finally {
+    $("download").disabled = false;
+  }
 });
 $("copy").addEventListener("click", () =>
   copy(

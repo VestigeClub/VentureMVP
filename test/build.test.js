@@ -12,6 +12,7 @@ test("release build removes stale files and ships only runtime assets", async ()
     "index.html",
     "app.js",
     "planner.js",
+    "poster.js",
     "styles.css",
     "assets",
     "assets/fonts",
