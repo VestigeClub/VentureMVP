@@ -2,7 +2,7 @@
 
 ## Scope
 
-Fairshare processes user input in a browser tab. It does not authenticate users, accept payments, store data on a server, or call a model API. It has no runtime package dependencies.
+Fairshare processes user input in a browser tab. It does not authenticate users, accept payments, or call a model API. Live team plans are stored in Firebase Realtime Database. It has no runtime package dependencies.
 
 ## Controls
 
@@ -16,7 +16,7 @@ Fairshare processes user input in a browser tab. It does not authenticate users,
 
 ## Data handling
 
-Plans are kept in the URL fragment and in this browser's localStorage (up to 10 plans; each can be deleted on the page). Fragments are not sent to the web server. Team and template links contain the plan or task list, so anyone with a link can read it. Opened links are decoded with strict validation (lengths, member list, owners, and dates) and rendered as text only; a damaged or tampered link shows an error instead of loading. Calendar exports are generated locally. Copying places the plan on the system clipboard; downloading creates a local text file. Users control further sharing and should avoid sensitive information. The site does not record participant study behavior.
+Plans are kept in this browser's localStorage (up to 10 plans; each can be deleted on the page). Copying a team link stores the encoded plan in Firebase Realtime Database at `plans/<id>`, where the ID is 128 random bits from `crypto.getRandomValues`. Database rules deny reads and writes at the root (so plans cannot be listed), allow access only to IDs of at least 20 characters, and reject entries that are not a string under 20,000 characters. The ID is the only credential: anyone with a live link can read and edit that plan, and there is no per-user access control or edit history. Data received from the database goes through the same strict decoder as links. The page's Content Security Policy only allows connections to Firebase database hosts. Snapshot and template links contain the plan or task list in the URL fragment, which is not sent to the web server. Opened links are decoded with strict validation (lengths, member list, owners, and dates) and rendered as text only; a damaged or tampered link shows an error instead of loading. Calendar exports are generated locally. Copying places the plan on the system clipboard; downloading creates a local text file. Users control further sharing and should avoid sensitive information. The site does not record participant study behavior.
 
 ## Limitations
 

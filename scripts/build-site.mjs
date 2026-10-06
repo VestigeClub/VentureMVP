@@ -8,6 +8,7 @@ for (const file of [
   "app.js",
   "planner.js",
   "poster.js",
+  "sync.js",
 ]) {
   await copyFile(file, `dist/${file}`);
 }

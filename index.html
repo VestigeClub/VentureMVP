@@ -9,7 +9,7 @@
     />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src https://*.firebaseio.com https://*.firebasedatabase.app; object-src 'none'; base-uri 'none'; form-action 'none'"
     />
     <meta name="referrer" content="no-referrer" />
     <meta name="theme-color" content="#2546ee" />
@@ -181,8 +181,8 @@
               </svg>
             </button>
             <p class="privacy">
-              No account. Plans are saved only in this browser, and team links
-              carry the plan in the link itself, never on a server.
+              No account. Team links open one live plan that everyone on the
+              link can edit, so use initials and avoid sensitive details.
             </p>
           </form>
         </section>
@@ -212,6 +212,12 @@
             <div class="plan-heading">
               <h2 id="plan-title" tabindex="-1"></h2>
               <span id="sample-label" class="badge" hidden>Sample project</span>
+              <span
+                id="live-badge"
+                class="badge"
+                hidden
+                aria-live="polite"
+              ></span>
             </div>
             <p id="plan-summary"></p>
             <div class="progress" aria-hidden="true">
@@ -243,7 +249,57 @@
               </button>
             </div>
             <p class="notice" id="schedule-note"></p>
+            <div class="view-toggle" role="group" aria-label="Plan view">
+              <button id="view-list" type="button" aria-pressed="true">
+                List
+              </button>
+              <button id="view-calendar" type="button" aria-pressed="false">
+                Calendar
+              </button>
+            </div>
             <div id="task-list"></div>
+            <div id="calendar-view" class="calendar" hidden>
+              <p class="hint">
+                Drag a task to another day, or tap it to change the owner, date,
+                or mark it done.
+              </p>
+              <div class="cal-head" aria-hidden="true">
+                <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span
+                ><span>Fri</span><span>Sat</span><span>Sun</span>
+              </div>
+              <div id="cal-grid" class="cal-grid"></div>
+              <div id="cal-editor" class="cal-editor" hidden>
+                <div class="cal-editor-head">
+                  <strong id="cal-editor-title"></strong>
+                  <button
+                    id="cal-editor-close"
+                    class="remove-task"
+                    type="button"
+                    aria-label="Close task editor"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="m6 6 12 12M6 18 18 6" />
+                    </svg>
+                  </button>
+                </div>
+                <div class="pair">
+                  <div>
+                    <label for="cal-owner">Owner</label>
+                    <select id="cal-owner"></select>
+                  </div>
+                  <div>
+                    <label for="cal-date">Due date</label>
+                    <input id="cal-date" type="date" />
+                  </div>
+                </div>
+                <button id="cal-claim" class="claim" type="button" hidden>
+                  I’ll take it
+                </button>
+                <label class="cal-done"
+                  ><input id="cal-done-box" type="checkbox" /> Done</label
+                >
+              </div>
+            </div>
             <div class="checkins">
               <div>
                 <h4>Check-ins</h4>
@@ -270,8 +326,8 @@
             <p id="status" role="status" class="status"></p>
             <p class="hint result-disclaimer">
               Review skills, availability, and dependencies with your team.
-              Rebuilding replaces your plan edits and completion marks. Links
-              are snapshots: after changes, copy the team link again.
+              Rebuilding replaces your plan edits and completion marks. Everyone
+              with the team link sees changes live.
             </p>
           </div>
         </section>
@@ -331,10 +387,11 @@
           <details>
             <summary>What happens to my information?</summary>
             <p>
-              No accounts, analytics, or server storage. Plans are saved only in
-              this browser, and you can delete them anytime. A team link holds
-              the plan after the # in the address, which browsers do not send to
-              any server. Anyone with the link can read the plan, so use
+              No accounts or analytics. Plans you build stay in this browser
+              until you copy a team link. Then the plan is stored in a Google
+              Firebase database under a long random address so your team can
+              edit it together live. There is no list of plans to browse, but
+              anyone with the link can read and change that plan, so use
               initials or aliases and avoid sensitive information.
             </p>
           </details>

@@ -25,11 +25,11 @@ const PAD = 56;
 const DAY = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const MONTH = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ");
 
-const pretty = (date) => {
+export const pretty = (date) => {
   const d = new Date(`${date}T12:00:00`);
   return `${DAY[(d.getDay() + 6) % 7]} ${MONTH[d.getMonth()]} ${d.getDate()}`;
 };
-const mondayOf = (date) =>
+export const mondayOf = (date) =>
   addDays(date, -((new Date(`${date}T12:00:00`).getDay() + 6) % 7));
 const tint = (hex, alpha) => {
   const n = parseInt(hex.slice(1), 16);

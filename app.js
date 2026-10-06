@@ -5,6 +5,7 @@ import {
   planText,
   checkInText,
   checkIns,
+  daysBetween,
   workloads,
   fairness,
   balanceOpen,
@@ -17,13 +18,27 @@ import {
   icsFor,
   TEMPLATES,
 } from "./planner.js";
-import { posterBlob } from "./poster.js";
+import {
+  liveEnabled,
+  validLiveId,
+  newLiveId,
+  pushPlan,
+  fetchPlan,
+  watchPlan,
+} from "./sync.js";
+import { posterBlob, mondayOf, pretty, OWNER_COLORS } from "./poster.js";
 const $ = (id) => document.getElementById(id);
 const STORE = "fairshare.plans.v1";
 let current = null;
 let example = false;
 let planIsExample = false;
 let viewer = "";
+let view = "list";
+let liveId = null;
+let lastSynced = null;
+let stopWatch = null;
+let pushTimer = null;
+let editing = -1;
 let rowId = 0;
 $("deadline").min = localDate();
 $("deadline").value = addDays(localDate(), 7);
@@ -187,11 +202,22 @@ function writeStore(list) {
 function save() {
   if (!current) return;
   const encoded = encodePlan(current);
-  history.replaceState(null, "", `#plan=${encoded}`);
+  history.replaceState(
+    null,
+    "",
+    liveId ? `#live=${liveId}` : `#plan=${encoded}`,
+  );
+  if (liveId && encoded !== lastSynced) schedulePush(encoded);
   if (planIsExample) return;
-  const id = planId(current);
+  const id = liveId ? `live:${liveId}` : planId(current);
   writeStore([
-    { id, title: current.title, deadline: current.deadline, plan: encoded },
+    {
+      id,
+      title: current.title,
+      deadline: current.deadline,
+      plan: encoded,
+      live: liveId,
+    },
     ...readStore().filter((item) => item.id !== id),
   ]);
   renderSaved();
@@ -211,6 +237,10 @@ function renderSaved() {
       open.append(due);
       open.addEventListener("click", () => {
         try {
+          if (item.live && liveEnabled()) {
+            openLive(item.live);
+            return;
+          }
           openPlan(decodePlan(item.plan), "Plan reopened from this browser.");
         } catch (error) {
           $("error").textContent = error.message;
@@ -269,7 +299,7 @@ function updateLoads() {
   $("fairness").className =
     fair.even && !fair.open ? "fair-even" : "fair-uneven";
   $("fairness").textContent = fair.open
-    ? `${current.tasks.filter((t) => t.owner === null).length} open task${current.tasks.filter((t) => t.owner === null).length === 1 ? "" : "s"} still need an owner.`
+    ? `${current.tasks.filter((t) => t.owner === null).length} open task${current.tasks.filter((t) => t.owner === null).length === 1 ? " still needs" : "s still need"} an owner.`
     : fair.spread === 0
       ? "Perfectly even: everyone has the same estimated hours."
       : fair.even
@@ -287,6 +317,10 @@ function changed(message) {
   if (message) $("status").textContent = message;
 }
 function renderTasks() {
+  renderList();
+  renderCalendar();
+}
+function renderList() {
   const today = localDate();
   $("task-list").replaceChildren(
     ...current.tasks.map((task) => {
@@ -382,6 +416,163 @@ function renderTasks() {
     }),
   );
 }
+// ---------- calendar view ----------
+const ownerColor = (owner) =>
+  owner === null
+    ? "#8a90a6"
+    : OWNER_COLORS[current.members.indexOf(owner) % OWNER_COLORS.length];
+function setView(next) {
+  view = next;
+  $("view-list").setAttribute("aria-pressed", String(view === "list"));
+  $("view-calendar").setAttribute("aria-pressed", String(view === "calendar"));
+  $("task-list").hidden = view !== "list";
+  $("calendar-view").hidden = view !== "calendar";
+}
+$("view-list").addEventListener("click", () => setView("list"));
+$("view-calendar").addEventListener("click", () => setView("calendar"));
+function moveTask(index, date) {
+  const task = current.tasks[index];
+  if (!task || date < current.today || date > current.deadline) return;
+  task.due = date;
+  renderTasks();
+  changed(`Moved “${task.name}” to ${pretty(date)}.`);
+}
+function renderCalendar() {
+  const today = localDate();
+  const start = mondayOf(current.today);
+  const days = daysBetween(start, current.deadline) + 1;
+  const weeks = Math.ceil(days / 7);
+  const meetings = new Set(checkIns(current));
+  const cells = [];
+  for (let i = 0; i < weeks * 7; i++) {
+    const date = addDays(start, i);
+    const inRange = date >= current.today && date <= current.deadline;
+    const cell = document.createElement("div");
+    cell.className = "cal-cell";
+    cell.classList.toggle("out", !inRange);
+    cell.classList.toggle("today", date === today);
+    cell.classList.toggle("deadline", date === current.deadline);
+    cell.dataset.date = date;
+    const head = document.createElement("div");
+    head.className = "cal-day";
+    const num = document.createElement("span");
+    num.textContent =
+      Number(date.slice(8)) === 1 || i === 0
+        ? pretty(date).slice(4)
+        : String(Number(date.slice(8)));
+    head.append(num);
+    if (date === current.deadline) {
+      const tag = document.createElement("em");
+      tag.className = "due";
+      tag.textContent = "Due";
+      head.append(tag);
+    } else if (meetings.has(date)) {
+      const tag = document.createElement("em");
+      tag.textContent = "Check-in";
+      head.append(tag);
+    }
+    cell.append(head);
+    current.tasks.forEach((task, index) => {
+      if (task.due !== date) return;
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "cal-chip";
+      chip.classList.toggle("done", task.done);
+      chip.classList.toggle("late", isLate(task, today));
+      chip.classList.toggle("mine", !!viewer && task.owner === viewer);
+      chip.style.setProperty("--owner", ownerColor(task.owner));
+      chip.draggable = true;
+      chip.setAttribute(
+        "aria-label",
+        `${task.name}, ${task.owner ?? "open"}, due ${pretty(task.due)}${task.done ? ", done" : ""}. Edit`,
+      );
+      const name = document.createElement("span");
+      name.textContent = task.name;
+      const who = document.createElement("small");
+      who.textContent = `${task.owner ?? "Open"} · ${task.hours}h`;
+      chip.append(name, who);
+      chip.addEventListener("dragstart", (event) => {
+        event.dataTransfer.setData("text/plain", String(index));
+        event.dataTransfer.effectAllowed = "move";
+      });
+      chip.addEventListener("click", () => openEditor(index));
+      cell.append(chip);
+    });
+    if (inRange) {
+      cell.addEventListener("dragover", (event) => {
+        event.preventDefault();
+        cell.classList.add("drop");
+      });
+      cell.addEventListener("dragleave", () => cell.classList.remove("drop"));
+      cell.addEventListener("drop", (event) => {
+        event.preventDefault();
+        cell.classList.remove("drop");
+        moveTask(Number(event.dataTransfer.getData("text/plain")), date);
+      });
+    }
+    cells.push(cell);
+  }
+  $("cal-grid").replaceChildren(...cells);
+  if (editing >= 0) fillEditor();
+}
+function fillEditor() {
+  const task = current.tasks[editing];
+  if (!task) return closeEditor();
+  $("cal-editor").hidden = false;
+  $("cal-editor-title").textContent = `${task.name} · ${task.hours}h`;
+  const open = document.createElement("option");
+  open.value = "";
+  open.textContent = "Open: anyone can claim";
+  $("cal-owner").replaceChildren(
+    open,
+    ...current.members.map((m) => {
+      const option = document.createElement("option");
+      option.value = m;
+      option.textContent = m;
+      return option;
+    }),
+  );
+  $("cal-owner").value = task.owner ?? "";
+  $("cal-date").min = current.today;
+  $("cal-date").max = current.deadline;
+  $("cal-date").value = task.due;
+  $("cal-done-box").checked = task.done;
+  $("cal-claim").hidden = !(viewer && task.owner === null);
+  $("cal-claim").textContent = `I’ll take it (${viewer})`;
+}
+function openEditor(index, focus = true) {
+  editing = index;
+  fillEditor();
+  if (focus) $("cal-owner").focus();
+}
+function closeEditor() {
+  editing = -1;
+  $("cal-editor").hidden = true;
+}
+$("cal-editor-close").addEventListener("click", closeEditor);
+$("cal-claim").addEventListener("click", () => {
+  const task = current.tasks[editing];
+  task.owner = viewer;
+  renderTasks();
+  changed(`${viewer} claimed “${task.name}”.`);
+});
+$("cal-owner").addEventListener("change", () => {
+  const task = current.tasks[editing];
+  task.owner = $("cal-owner").value || null;
+  renderTasks();
+  changed(`“${task.name}” is now ${task.owner ? `${task.owner}’s` : "open"}.`);
+});
+$("cal-date").addEventListener("change", () => {
+  if ($("cal-date").value && $("cal-date").checkValidity())
+    moveTask(editing, $("cal-date").value);
+  else $("cal-date").value = current.tasks[editing].due;
+});
+$("cal-done-box").addEventListener("change", () => {
+  const task = current.tasks[editing];
+  task.done = $("cal-done-box").checked;
+  renderTasks();
+  changed(task.done ? `Marked “${task.name}” done.` : "Marked not done.");
+});
 function renderViewer() {
   if (viewer && !current.members.includes(viewer)) viewer = "";
   const everyone = document.createElement("option");
@@ -405,6 +596,7 @@ function renderViewer() {
     : "Add to calendar";
 }
 function render() {
+  closeEditor();
   $("empty").hidden = true;
   $("plan").hidden = false;
   $("plan-title").textContent = current.title;
@@ -433,7 +625,8 @@ function fillForm(plan) {
     `input[value="${plan.tasks.some((t) => t.owner === null) ? "claim" : "balance"}"]`,
   ).checked = true;
 }
-function openPlan(plan, message) {
+function openPlan(plan, message, keepLive = false) {
+  if (!keepLive) stopLive();
   fillForm(plan);
   current = plan;
   planIsExample = false;
@@ -472,6 +665,7 @@ $("planner-form").addEventListener("submit", (event) => {
     });
     if (next.members.some((m) => m.length > 40))
       throw new Error("Keep each teammate alias under 40 characters.");
+    stopLive();
     current = next;
     planIsExample = example;
     viewer = "";
@@ -524,13 +718,135 @@ $("keep-work").addEventListener("click", () => {
 $("planner-form").addEventListener("input", (event) => {
   if (event.target.id !== "brief") markInputsChanged();
 });
+// ---------- live sync ----------
+function setLiveBadge(state) {
+  $("live-badge").hidden = !liveId;
+  $("live-badge").className = `badge live-${state}`;
+  $("live-badge").textContent =
+    state === "live" ? "Live" : state === "off" ? "Offline" : "Reconnecting…";
+}
+function stopLive() {
+  stopWatch?.();
+  stopWatch = null;
+  clearTimeout(pushTimer);
+  liveId = null;
+  lastSynced = null;
+  $("live-badge").hidden = true;
+}
+function schedulePush(encoded) {
+  clearTimeout(pushTimer);
+  const id = liveId;
+  pushTimer = setTimeout(async () => {
+    try {
+      await pushPlan(id, encoded);
+      if (id === liveId) lastSynced = encoded;
+    } catch {
+      $("status").textContent =
+        "Couldn’t sync that change. Check your connection; the next change will retry.";
+      setLiveBadge("reconnecting");
+    }
+  }, 250);
+}
+function applyRemote(encoded) {
+  if (!current || encoded === lastSynced || encoded === encodePlan(current))
+    return;
+  try {
+    const plan = decodePlan(encoded);
+    lastSynced = encoded;
+    const keep = { viewer, editing, view };
+    current = plan;
+    planIsExample = false;
+    render();
+    viewer = plan.members.includes(keep.viewer) ? keep.viewer : "";
+    renderViewer();
+    renderTasks();
+    updateLoads();
+    setView(keep.view);
+    if (keep.editing >= 0 && keep.editing < plan.tasks.length)
+      openEditor(keep.editing, false);
+    $("status").textContent = "Updated live from a teammate.";
+  } catch {
+    /* ignore a damaged remote copy */
+  }
+}
+function startWatch() {
+  stopWatch?.();
+  setLiveBadge("reconnecting");
+  stopWatch = watchPlan(liveId, applyRemote, setLiveBadge);
+}
+async function goLive() {
+  if (liveId) return;
+  const id = newLiveId();
+  const encoded = encodePlan(current);
+  await pushPlan(id, encoded);
+  liveId = id;
+  lastSynced = encoded;
+  save();
+  startWatch();
+}
+async function openLive(id) {
+  const encoded = await fetchPlan(id);
+  if (!encoded)
+    throw new Error(
+      "This live plan doesn’t exist anymore. Ask for a new link.",
+    );
+  const plan = decodePlan(encoded);
+  stopLive();
+  liveId = id;
+  lastSynced = encoded;
+  openPlan(
+    plan,
+    "Opened the team’s live plan. Pick your name under “Viewing as”; every change syncs to everyone.",
+    true,
+  );
+  startWatch();
+  setView("calendar");
+  $("plan").scrollIntoView();
+}
+// Returns a string when no network call is needed, otherwise a promise.
+function shareLink() {
+  if (liveId) return `${pageUrl()}#live=${liveId}`;
+  if (!liveEnabled() || planIsExample)
+    return `${pageUrl()}#plan=${encodePlan(current)}`;
+  return createLiveLink();
+}
+async function createLiveLink() {
+  {
+    try {
+      await goLive();
+      return `${pageUrl()}#live=${liveId}`;
+    } catch {
+      $("status").textContent =
+        "Live sharing is unavailable right now, so this is a snapshot link.";
+    }
+  }
+  return `${pageUrl()}#plan=${encodePlan(current)}`;
+}
+const withLink = (format) => {
+  const link = shareLink();
+  return typeof link === "string" ? format(link) : link.then(format);
+};
 // ---------- sharing ----------
 const label = () =>
   planIsExample ? "SAMPLE PROJECT — demonstration only\n\n" : "";
 const pageUrl = () => `${location.origin}${location.pathname}`;
 async function copy(text, success) {
   try {
-    await navigator.clipboard.writeText(text);
+    if (typeof text === "string") await navigator.clipboard.writeText(text);
+    else {
+      try {
+        // A promise keeps the click's clipboard permission while the live link is created.
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            "text/plain": text.then(
+              (t) => new Blob([t], { type: "text/plain" }),
+            ),
+          }),
+        ]);
+      } catch {
+        await navigator.clipboard.writeText(await text);
+      }
+    }
     $("status").textContent = success;
   } catch {
     $("status").textContent =
@@ -578,19 +894,24 @@ $("download").addEventListener("click", async () => {
 });
 $("copy").addEventListener("click", () =>
   copy(
-    `${label()}${planText(current)}\nOpen, claim, and update: ${pageUrl()}#plan=${encodePlan(current)}\n`,
+    withLink(
+      (link) =>
+        `${label()}${planText(current)}\nOpen, claim, and update: ${link}\n`,
+    ),
     "Plan copied with its team link. Paste it into your group chat.",
   ),
 );
 $("copy-link").addEventListener("click", () =>
   copy(
-    `${pageUrl()}#plan=${encodePlan(current)}`,
-    "Team link copied. Teammates open it, pick their name, and claim tasks. They send the link back after changes.",
+    shareLink(),
+    liveEnabled() && !planIsExample
+      ? "Live team link copied. Everyone who opens it sees the same calendar, and every change syncs instantly."
+      : "Team link copied. Teammates open it, pick their name, and claim tasks. They send the link back after changes.",
   ),
 );
 $("copy-checkin").addEventListener("click", () =>
   copy(
-    `${checkInText(current)}\nLatest plan: ${pageUrl()}#plan=${encodePlan(current)}\n`,
+    withLink((link) => `${checkInText(current)}\nLatest plan: ${link}\n`),
     "Check-in message copied. Paste it into your group chat.",
   ),
 );
@@ -617,7 +938,17 @@ $("copy-template").addEventListener("click", () =>
 function openFromHash() {
   const hash = location.hash;
   try {
-    if (hash.startsWith("#plan=")) {
+    if (hash.startsWith("#live=")) {
+      const id = hash.slice(6);
+      if (!validLiveId(id) || !liveEnabled())
+        throw new Error("This live plan link isn’t valid.");
+      if (id !== liveId)
+        openLive(id).catch((error) => {
+          $("error").textContent = error.message.startsWith("This")
+            ? error.message
+            : "Couldn’t load the live plan. Check your connection and refresh.";
+        });
+    } else if (hash.startsWith("#plan=")) {
       const plan = decodePlan(hash.slice(6));
       const saved = readStore().find((item) => item.id === planId(plan));
       openPlan(
@@ -626,7 +957,8 @@ function openFromHash() {
           ? "Opened the shared version of this plan. It replaces your saved copy here."
           : "Opened a shared plan. Pick your name under “Viewing as” to claim tasks.",
       );
-      $("workspace").scrollIntoView();
+      setView("calendar");
+      $("plan").scrollIntoView();
     } else if (hash.startsWith("#template=")) {
       const template = decodeTemplate(hash.slice(10));
       $("project").value = template.title;

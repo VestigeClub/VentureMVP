@@ -13,6 +13,7 @@ test("release build removes stale files and ships only runtime assets", async ()
     "app.js",
     "planner.js",
     "poster.js",
+    "sync.js",
     "styles.css",
     "assets",
     "assets/fonts",
@@ -22,6 +23,9 @@ test("release build removes stale files and ships only runtime assets", async ()
   assert.deepEqual(files.sort(), expected.sort());
   const html = await readFile("dist/index.html", "utf8");
   assert.match(html, /Content-Security-Policy/);
-  assert.match(html, /connect-src 'none'/);
+  assert.match(
+    html,
+    /connect-src https:\/\/\*\.firebaseio\.com https:\/\/\*\.firebasedatabase\.app;/,
+  );
   assert.doesNotMatch(html, /(?:src|href)="https?:\/\//);
 });
