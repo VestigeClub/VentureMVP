@@ -1,5 +1,20 @@
 # User-test evidence
 
+## Sep 24, 2026 check-in (Pitch 2), self-reported
+
+Three students coordinating real group projects tried Fairshare. Results are self-reported, not observed under the frozen H1 protocol.
+
+| Measure                                      | Result                                                   |
+| -------------------------------------------- | -------------------------------------------------------- |
+| Built a plan for a real group project        | 3 of 3 (10–55 min)                                       |
+| Posted it to their team                      | 1 of 3 (edited first); 1 more sent it to their team lead |
+| Would pay $15 per semester                   | 0 of 3                                                   |
+| Precommitted adoption rule (≥2 of 3 post it) | Not met                                                  |
+
+What we learned: one coordinator felt assigning everyone's hours was "judgey." Both coordinators wanted teammates to claim tasks together, shared tasks, or check-ins. For one, defining tasks took about 45 minutes; entering them took 5–10 minutes. Next step: test instructors as the payer and a $3 student price ([economics](economics.md)).
+
+## Earlier record (Sep 8)
+
 As of 2026-09-08, the owner reports that one friend tested Fairshare for a group project (1 reported tester). No identifying information is included. This informal test has not been assessed against the precommitted H1 criteria; no success rate or pass/fail conclusion is claimed.
 
 The table below records the formal H1 study, which remains pending.

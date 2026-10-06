@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Fairshare gives every group project task an owner and a deadline. Build, adjust, and share an effort-balanced plan."
+      content="Fairshare gives every group project task an owner and a deadline. Build a balanced plan, let teammates claim tasks, and keep everyone on track in the chat you already use."
     />
     <meta
       http-equiv="Content-Security-Policy"
@@ -36,7 +36,8 @@
         >fairshare</a
       >
       <nav aria-label="Main navigation">
-        <a href="#workspace">Planner</a><a href="#about">The idea</a
+        <a href="#workspace">Planner</a><a href="#instructors">Instructors</a
+        ><a href="#about">The idea</a
         ><span class="prototype">Student prototype</span>
       </nav>
     </header>
@@ -46,8 +47,8 @@
         <div class="opening-copy">
           <p>
             A group project shouldn’t leave one person doing all the follow-up.
-            Make a work plan, balance the estimated effort, and bring it to your
-            team.
+            Draft a fair plan in minutes, let teammates claim their own tasks,
+            and keep everyone on track in the chat your team already uses.
           </p>
           <button id="sample" class="sample-button" type="button">
             Explore a sample project
@@ -82,6 +83,14 @@
             <h3 id="setup-heading">Set up the work</h3>
             <span class="step-number" aria-label="Step 1 of 2">1 / 2</span>
           </div>
+          <div id="saved" class="saved" hidden>
+            <h4>Pick up where you left off</h4>
+            <ul id="saved-list"></ul>
+          </div>
+          <p id="template-note" class="notice template-note" hidden>
+            Started from a shared template. Add your teammates, choose how to
+            set owners, and build your plan.
+          </p>
           <form id="planner-form">
             <label for="project">Project name</label
             ><input
@@ -110,6 +119,14 @@
             <p class="hint">
               Use aliases, separated by commas. Include yourself.
             </p>
+            <div
+              class="templates"
+              role="group"
+              aria-labelledby="templates-label"
+            >
+              <span id="templates-label">Start from a template</span>
+              <div id="template-buttons"></div>
+            </div>
             <div class="task-input-heading">
               <label id="tasks-label">What needs to get done?</label
               ><span>Estimated hours</span>
@@ -123,6 +140,39 @@
             <button id="add-task" class="add-button" type="button">
               <span aria-hidden="true">+</span> Add a task
             </button>
+            <details class="brief-box" id="brief-box">
+              <summary>Catch missing tasks from the assignment brief</summary>
+              <label for="brief">Paste the assignment instructions</label>
+              <textarea
+                id="brief"
+                maxlength="6000"
+                rows="5"
+                placeholder="e.g. Teams give a 10-minute presentation with slides, cite at least five sources, and submit on Carmen."
+              ></textarea>
+              <button id="check-brief" class="secondary" type="button">
+                Check for missing tasks
+              </button>
+              <p id="brief-status" class="hint" role="status"></p>
+              <ul id="suggestions" class="suggestions"></ul>
+            </details>
+            <fieldset class="mode">
+              <legend>How should owners be set?</legend>
+              <label class="choice"
+                ><input type="radio" name="mode" value="balance" checked />
+                <span
+                  ><strong>Balance it for us</strong>Biggest task goes to
+                  whoever has the least work.</span
+                ></label
+              >
+              <label class="choice"
+                ><input type="radio" name="mode" value="claim" />
+                <span
+                  ><strong>Let teammates claim tasks</strong>Share a link;
+                  everyone picks their own. Balance the leftovers in one
+                  click.</span
+                ></label
+              >
+            </fieldset>
             <p class="error" id="error" role="alert"></p>
             <button class="primary build-button" type="submit">
               Build my plan
@@ -131,8 +181,8 @@
               </svg>
             </button>
             <p class="privacy">
-              Your entries stay in this tab. Download before leaving: refreshing
-              clears your work.
+              No account. Plans are saved only in this browser, and team links
+              carry the plan in the link itself, never on a server.
             </p>
           </form>
         </section>
@@ -164,6 +214,14 @@
               <span id="sample-label" class="badge" hidden>Sample project</span>
             </div>
             <p id="plan-summary"></p>
+            <div class="progress" aria-hidden="true">
+              <div id="progress-fill"></div>
+            </div>
+            <div class="viewer">
+              <label for="viewer">Viewing as</label>
+              <select id="viewer"></select>
+              <span class="hint" id="viewer-hint"></span>
+            </div>
             <div class="workload-heading">
               <h4>Estimated workload</h4>
               <span id="balance-caption"></span>
@@ -173,23 +231,69 @@
               class="loads"
               aria-label="Estimated workload per teammate"
             ></div>
-            <p class="notice" id="schedule-note"></p>
-            <div id="task-list"></div>
-            <div class="export-row">
-              <button id="download" class="primary" type="button">
-                Download plan</button
-              ><button id="copy" class="secondary" type="button">
-                Copy for group chat
+            <div class="fairness">
+              <span id="fairness"></span>
+              <button
+                id="balance-open"
+                class="secondary small"
+                type="button"
+                hidden
+              >
+                Balance open tasks
               </button>
             </div>
+            <p class="notice" id="schedule-note"></p>
+            <div id="task-list"></div>
+            <div class="checkins">
+              <div>
+                <h4>Check-ins</h4>
+                <p id="checkin-dates" class="hint"></p>
+              </div>
+              <button id="copy-checkin" class="secondary small" type="button">
+                Copy check-in message
+              </button>
+            </div>
+            <div class="export-row">
+              <button id="copy-link" class="primary" type="button">
+                Copy team link</button
+              ><button id="copy" class="secondary" type="button">
+                Copy for group chat</button
+              ><button id="calendar" class="secondary" type="button">
+                Add to calendar</button
+              ><button id="download" class="secondary" type="button">
+                Download plan
+              </button>
+            </div>
+            <button id="copy-template" class="text-button" type="button">
+              Share as a reusable template (tasks only, no names)
+            </button>
             <p id="status" role="status" class="status"></p>
             <p class="hint result-disclaimer">
               Review skills, availability, and dependencies with your team.
-              Rebuilding replaces your plan edits and completion marks.
+              Rebuilding replaces your plan edits and completion marks. Links
+              are snapshots: after changes, copy the team link again.
             </p>
           </div>
         </section>
       </div>
+      <section id="instructors" class="instructors">
+        <div>
+          <span class="eyebrow">For instructors</span>
+          <h2>One task list for the whole section.</h2>
+        </div>
+        <div>
+          <p>
+            Build your assignment’s tasks and deadline once, then choose
+            <strong>Share as a reusable template</strong>. Every team opens the
+            same starting plan, adds their names, and claims or balances the
+            work. No student accounts and no data collection.
+          </p>
+          <p class="hint">
+            We are arranging paid Spring 2027 pilot sections at $150 per course
+            section. The basic planner stays free for everyone.
+          </p>
+        </div>
+      </section>
       <section id="about" class="about">
         <div>
           <h2>Built for the moment<br />after “let’s make a group chat.”</h2>
@@ -207,27 +311,31 @@
               effort, then the process repeats. Dates follow your task order,
               with a final day for review when time allows. Equal estimated
               hours do not guarantee equal difficulty. You can edit every owner
-              and date.
+              and date. Prefer not to assign people? Choose “Let teammates claim
+              tasks,” share the team link, and balance whatever is left over in
+              one click.
             </p>
           </details>
           <details>
             <summary>Who would pay for this?</summary>
             <p>
-              The planner is free. Our proposed next offer is a $5 human review
-              per team and assignment: check the task list against the brief,
-              flag missing work, and suggest owners and dates that fit the
-              team’s stated availability. One coordinating student would pay for
-              the review. That service is not available yet. The price and
-              willingness to pay are untested.
+              The basic planner stays free for anyone. We are testing whether
+              instructors or departments will pay $150 per course section per
+              semester for a team version every student in the course can use,
+              starting with paid Spring 2027 pilot sections. We are also testing
+              a $3 one-time price per project for students. In our first
+              check-in, 0 of 3 student coordinators said they would pay $15 a
+              semester. Instructor willingness to pay is untested.
             </p>
           </details>
           <details>
             <summary>What happens to my information?</summary>
             <p>
-              No accounts, analytics, or server storage. Your entries remain in
-              this tab until you copy or download them. Use initials or aliases
-              and avoid sensitive information. Closing or refreshing the page
-              clears your work.
+              No accounts, analytics, or server storage. Plans are saved only in
+              this browser, and you can delete them anytime. A team link holds
+              the plan after the # in the address, which browsers do not send to
+              any server. Anyone with the link can read the plan, so use
+              initials or aliases and avoid sensitive information.
             </p>
           </details>
           <details>
@@ -235,8 +343,8 @@
             <p>
               This student project studies whether a draft plan helps students
               coordinate real group assignments. Participation in any study is
-              voluntary. No analytics are collected by this website, and no
-              user-test outcomes are claimed here.
+              voluntary. No analytics are collected by this website. Results
+              mentioned here come from a small, self-reported check-in.
             </p>
           </details>
         </div>

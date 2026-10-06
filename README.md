@@ -1,6 +1,13 @@
 # Fairshare
 
-Fairshare turns a group assignment into an editable plan with task owners, estimated effort, and suggested due dates. Plans can be copied to a group chat or downloaded as a text file.
+Fairshare turns a group assignment into an editable plan with task owners, estimated effort, and suggested due dates.
+
+- **Balance or claim:** let Fairshare balance estimated hours, or leave tasks open so teammates claim their own and balance the leftovers in one click.
+- **Team links:** the whole plan travels in the link (after the `#`), so teammates open it, claim tasks, mark progress, and send it back. No accounts or server.
+- **Missing-task checker and templates:** paste the assignment brief to catch tasks your list skips, or start from a presentation, paper, case study, or lab report.
+- **Check-ins:** suggested check-in dates, a ready-to-paste status message, and a calendar file with due-date reminders for the team or one person.
+- **Saved plans:** plans are kept in this browser so you can pick up where you left off.
+- **Instructor templates:** share one task list and deadline with a whole section; every team adds its own names.
 
 [Open Fairshare](https://VestigeClub.github.io/VentureMVP/)
 
@@ -20,7 +27,7 @@ Open http://localhost:8000. The deployable website is built in `dist/`.
 
 The planner assigns the largest estimated task to the teammate with the lowest assigned workload, then repeats. It preserves the original task order when suggesting dates and reserves the final day for review when possible. Owners and dates remain editable.
 
-This is a draft, not a feasibility guarantee. The algorithm does not account for skills, dependencies, or personal availability. A team should agree on the plan before using it. Refreshing or closing the tab clears the working session.
+This is a draft, not a feasibility guarantee. The algorithm does not account for skills, dependencies, or personal availability. A team should agree on the plan before using it. The current plan is kept in the address bar and in this browser, so refreshing does not lose it.
 
 ## Project structure
 
@@ -41,7 +48,7 @@ GitHub Actions tests pull requests and changes to `main`. A successful push to `
 
 ## Privacy and security
 
-The app has no accounts, analytics, third-party scripts, or server-side storage. Entered content remains in the browser tab until the user copies or downloads it. Use aliases and avoid sensitive information. See [security notes](docs/security.md) for controls and limitations.
+The app has no accounts, analytics, third-party scripts, or server-side storage. Plans are saved only in the browser (localStorage) and can be deleted from the page. Team links carry the plan in the URL fragment, which browsers do not send to servers; anyone holding a link can read that plan. Use aliases and avoid sensitive information. See [security notes](docs/security.md) for controls and limitations.
 
 [Release checks](docs/release-checks.md) record the deployed workflow and known verification limits.
 
