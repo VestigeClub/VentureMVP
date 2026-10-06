@@ -16,7 +16,7 @@ Fairshare processes user input in a browser tab. It does not authenticate users,
 
 ## Data handling
 
-Inputs remain in memory. Reloading or closing the page clears the session. Copying places the plan on the system clipboard; downloading creates a local text file. Users control further sharing and should avoid sensitive information. The site does not record participant study behavior.
+Plans are kept in the URL fragment and in this browser's localStorage (up to 10 plans; each can be deleted on the page). Fragments are not sent to the web server. Team and template links contain the plan or task list, so anyone with a link can read it. Opened links are decoded with strict validation (lengths, member list, owners, and dates) and rendered as text only; a damaged or tampered link shows an error instead of loading. Calendar exports are generated locally. Copying places the plan on the system clipboard; downloading creates a local text file. Users control further sharing and should avoid sensitive information. The site does not record participant study behavior.
 
 ## Limitations
 

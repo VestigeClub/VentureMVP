@@ -1,6 +1,6 @@
 # Coursework records
 
-Fairshare supports two separate BUSFIN 4215 submissions: Venture MVP (10%) and Pitch 1 (5%). Solo groups are allowed, but each assignment uses its own Canvas group set.
+Fairshare supports the BUSFIN 4215 Venture MVP, Pitch 1, Pitch 2, financing negotiation, and outcome memo submissions. Solo groups are allowed, but each assignment uses its own Canvas group set.
 
 | Record                              | Purpose                                                                            |
 | ----------------------------------- | ---------------------------------------------------------------------------------- |
@@ -16,7 +16,7 @@ Fairshare supports two separate BUSFIN 4215 submissions: Venture MVP (10%) and P
 
 ## Current evidence
 
-One informal test by a friend has been reported; the formal study and pitch practice remain pending. The evidence and revision records therefore remain incomplete. A working deployment does not establish demand, user adoption, or a completed practice/re-pitch sequence.
+Sep 24 check-in (self-reported): 3 of 3 student coordinators built a plan, 1 of 3 posted it to their team, and 0 of 3 would pay $15 per semester. The adoption rule was not met, so the payer being tested moved to instructors ($150 per section). See [evidence](evidence.md) and [economics](economics.md). A working deployment does not establish demand or payment.
 
 ## Submission requirements
 
